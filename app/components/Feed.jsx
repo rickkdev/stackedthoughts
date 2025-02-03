@@ -156,7 +156,7 @@ export default function Feed() {
             {filteredItems.map((item) => (
               <div
                 key={item.id}
-                className="p-4 rounded-sm shadow hover:shadow-md transition-shadow border border-zinc-800"
+                className="p-4 rounded-sm shadow hover:shadow-md transition-shadow border border-zinc-800 w-[600px]"
               >
                 <div className="flex items-start gap-3">
                   {/* Add icon based on item type */}
