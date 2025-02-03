@@ -103,7 +103,7 @@ export default function Feed() {
 
   return (
     <div className="p-6 min-h-screen">
-      <div className="max-w-2xl mx-auto mt-4">
+      <div className="max-w-2xl mx-auto mt-4 overflow-y-auto pt-2">
         <div className="flex gap-3 mb-6">
           <button
             onClick={() => setShowTasks(!showTasks)}

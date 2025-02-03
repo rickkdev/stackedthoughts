@@ -58,15 +58,17 @@ export default function Home() {
           <p className="text-white">Loading...</p>
         </div>
       ) : (
-        <div className="h-full overflow-auto">
-          <div className="flex flex-row p-6 space-x-6">
-            <Feed todos={todos} />
-          </div>
+        <div className="h-full w-full overflow-auto scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-100">
+          <div className="container mx-auto px-4">
+            <div className="flex flex-row justify-center p-6 space-x-6">
+              <Feed todos={todos} />
+            </div>
 
-          {/* Right side - Analytics */}
-          <div className="p-6 pt-12">
-            {/*      <CategoryDistribution /> */}
-            {/*  <DailyOverview todos={todos} /> */}
+            {/* Right side - Analytics */}
+            <div className="p-6 pt-12">
+              {/*      <CategoryDistribution /> */}
+              {/*  <DailyOverview todos={todos} /> */}
+            </div>
           </div>
         </div>
       )}
