@@ -102,7 +102,7 @@ export default function Home() {
     <div className="fixed flex justify-center items-center inset-0 bg-customGray">
       {isLoading ? (
         <div className="w-full flex items-center justify-center">
-          <p className="text-white">Loading...</p>
+          <p className="text-white">Loading..</p>
         </div>
       ) : (
         <div className="h-full w-full overflow-auto scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-100">
