@@ -56,7 +56,7 @@ export default function Home() {
 
   const handleLogin = (e) => {
     e.preventDefault();
-    if (password === process.env.PW) {
+    if (password === process.env.NEXT_PUBLIC.PW) {
       setIsAuthenticated(true);
       localStorage.setItem("isAuthenticated", "true");
     } else {
