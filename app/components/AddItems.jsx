@@ -168,6 +168,14 @@ export default function AddItems({ onItemAdded }) {
           <textarea
             value={text}
             onChange={(e) => setText(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                if (isValidCommand) {
+                  handleSubmit(e);
+                }
+              }
+            }}
             placeholder="Start with /task or /dopamine..."
             className="w-full py-3 px-3 rounded-sm bg-transparent text-transparent placeholder-transparent leading-relaxed resize-none z-10 absolute inset-0 caret-white outline-none focus:outline-none"
             data-tooltip-id="command-tooltip"
