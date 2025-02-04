@@ -155,7 +155,7 @@ export default function Feed() {
             )}
 
             {filteredItems.map((item) => (
-              <ItemCard key={item.id} item={item} />
+              <ItemCard key={item.id} item={item} onUpdate={fetchItems} />
             ))}
           </div>
         )}
