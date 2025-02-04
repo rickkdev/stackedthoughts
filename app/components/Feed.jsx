@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "../../lib/supabase";
 import { CheckSquare, Activity } from "lucide-react";
 import AddItems from "./AddItems";
+import ItemCard from "./ItemCard";
 
 export default function Feed() {
   const [items, setItems] = useState([]);
@@ -154,54 +155,11 @@ export default function Feed() {
             )}
 
             {filteredItems.map((item) => (
-              <div
-                key={item.id}
-                className="p-4 rounded-sm shadow hover:shadow-md transition-shadow border border-zinc-800 w-[600px]"
-              >
-                <div className="flex items-start gap-3">
-                  {/* Add icon based on item type */}
-                  {item.task || item.text ? (
-                    <CheckSquare className="w-5 h-5 text-green-500 mt-1" />
-                  ) : (
-                    <Activity className="w-5 h-5 text-coral mt-1" />
-                  )}
-                  <div className="flex-1">
-                    <p className="text-white">
-                      {highlightHashtags(
-                        item.title ||
-                          item.text ||
-                          item.task ||
-                          item.description ||
-                          item.activity
-                      )}
-                    </p>
-                    <span className="text-zinc-400 text-sm">
-                      {new Date(item.created_at).toLocaleString()}
-                    </span>
-                  </div>
-                </div>
-              </div>
+              <ItemCard key={item.id} item={item} />
             ))}
           </div>
         )}
       </div>
     </div>
-  );
-}
-
-function highlightHashtags(text) {
-  const hashtagRegex = /(#[\w]+)/g;
-  return text.split(hashtagRegex).map((part, index) =>
-    part.startsWith("#") ? (
-      <span
-        key={index}
-        className="bg-white rounded-sm px-1"
-        style={{ backgroundColor: "rgba(255, 255, 255, 0.4)", color: "black" }}
-      >
-        {part}
-      </span>
-    ) : (
-      part
-    )
   );
 }
