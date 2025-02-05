@@ -6,7 +6,6 @@ import "react-tooltip/dist/react-tooltip.css";
 
 export default function AddItems({ onItemAdded }) {
   const [text, setText] = useState("");
-  const [textareaHeight, setTextareaHeight] = useState("100px");
   const [showScoreModal, setShowScoreModal] = useState(false);
   const [newCategory, setNewCategory] = useState("");
   const [newScore, setNewScore] = useState("");
@@ -16,17 +15,6 @@ export default function AddItems({ onItemAdded }) {
   useEffect(() => {
     fetchImpactScores();
   }, []);
-
-  // Add this effect to handle textarea height
-  useEffect(() => {
-    const textarea = document.querySelector("textarea");
-    if (textarea) {
-      textarea.style.height = "100px";
-      const scrollHeight = textarea.scrollHeight;
-      textarea.style.height = `${scrollHeight}px`;
-      setTextareaHeight(`${scrollHeight}px`);
-    }
-  }, [text]);
 
   async function fetchImpactScores() {
     try {
@@ -164,7 +152,8 @@ export default function AddItems({ onItemAdded }) {
   return (
     <>
       <form onSubmit={handleSubmit} className="mb-6 w-full">
-        <div className="flex flex-col border rounded-sm border-zinc-800 relative w-full">
+        <div className="relative w-full h-32 border rounded-md border-zinc-800 bg-customGray">
+          {/* Input Area */}
           <textarea
             value={text}
             onChange={(e) => setText(e.target.value)}
@@ -177,33 +166,15 @@ export default function AddItems({ onItemAdded }) {
               }
             }}
             placeholder="Start with /task or /dopamine..."
-            className="w-full py-3 px-3 rounded-sm bg-transparent text-transparent placeholder-transparent leading-relaxed resize-none z-10 absolute inset-0 caret-white outline-none focus:outline-none"
-            data-tooltip-id="command-tooltip"
-            data-tooltip-content="Start typing /task or /dopamine"
-            data-tooltip-variant="dark"
-            style={{ height: textareaHeight, paddingBottom: "80px" }}
+            className="absolute inset-0 w-full h-2/3 p-3 bg-transparent text-white placeholder-zinc-500 resize-none outline-none overflow-hidden"
           />
-          <div
-            className="w-full py-3 px-3 rounded-sm bg-customGray text-white placeholder-zinc-500 leading-relaxed whitespace-pre-wrap pointer-events-none"
-            style={{
-              minHeight: "100px",
-              height: textareaHeight,
-              paddingBottom: "80px",
-            }}
-          >
-            {text ? (
-              renderTextWithHighlight()
-            ) : (
-              <span className="text-zinc-500">
-                Start with /task or /dopamine...
-              </span>
-            )}
-          </div>
-          <div className="absolute bottom-0 right-0 p-2">
+
+          {/* Button Area */}
+          <div className="absolute bottom-0 right-0 w-full h-1/3 flex justify-end items-center pb-4 mr-2">
             <button
               type="submit"
               disabled={!isValidCommand}
-              className={`px-4 py-2 m-2 rounded-full ${
+              className={`px-4 py-2 rounded-full ${
                 !isValidCommand
                   ? "bg-zinc-800 text-zinc-500 cursor-not-allowed"
                   : text.startsWith("/task")
