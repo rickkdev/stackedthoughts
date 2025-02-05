@@ -111,7 +111,7 @@ export default function Feed({ initialItems }) {
   return (
     <div className="p-6 min-h-screen">
       <div className="max-w-2xl mx-auto mt-4 overflow-y-auto pt-2">
-        <div className="flex gap-3 mb-6">
+        <div className="flex gap-3 mb-6 w-full">
           <button
             onClick={() => setShowTasks(!showTasks)}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border transition-colors ${
@@ -140,7 +140,7 @@ export default function Feed({ initialItems }) {
 
         <div className="space-y-4">
           {uniqueHashtags.length > 0 && (
-            <div className="flex flex-wrap gap-2 mb-6">
+            <div className="flex flex-wrap gap-2 mb-6 w-[37rem]">
               {uniqueHashtags.map((hashtag) => (
                 <button
                   key={hashtag}

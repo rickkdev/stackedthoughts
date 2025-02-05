@@ -6,7 +6,7 @@ import "react-tooltip/dist/react-tooltip.css";
 
 export default function AddItems({ onItemAdded }) {
   const [text, setText] = useState("");
-  const [textareaHeight, setTextareaHeight] = useState("77px");
+  const [textareaHeight, setTextareaHeight] = useState("100px");
   const [showScoreModal, setShowScoreModal] = useState(false);
   const [newCategory, setNewCategory] = useState("");
   const [newScore, setNewScore] = useState("");
@@ -21,7 +21,7 @@ export default function AddItems({ onItemAdded }) {
   useEffect(() => {
     const textarea = document.querySelector("textarea");
     if (textarea) {
-      textarea.style.height = "77px"; // Reset height
+      textarea.style.height = "100px";
       const scrollHeight = textarea.scrollHeight;
       textarea.style.height = `${scrollHeight}px`;
       setTextareaHeight(`${scrollHeight}px`);
@@ -163,8 +163,8 @@ export default function AddItems({ onItemAdded }) {
 
   return (
     <>
-      <form onSubmit={handleSubmit} className="mb-6">
-        <div className="flex flex-col border border-zinc-800 relative">
+      <form onSubmit={handleSubmit} className="mb-6 w-full">
+        <div className="flex flex-col border rounded-sm border-zinc-800 relative w-full">
           <textarea
             value={text}
             onChange={(e) => setText(e.target.value)}
@@ -181,11 +181,15 @@ export default function AddItems({ onItemAdded }) {
             data-tooltip-id="command-tooltip"
             data-tooltip-content="Start typing /task or /dopamine"
             data-tooltip-variant="dark"
-            style={{ height: textareaHeight }}
+            style={{ height: textareaHeight, paddingBottom: "80px" }}
           />
           <div
             className="w-full py-3 px-3 rounded-sm bg-customGray text-white placeholder-zinc-500 leading-relaxed whitespace-pre-wrap pointer-events-none"
-            style={{ minHeight: "77px", height: textareaHeight }}
+            style={{
+              minHeight: "100px",
+              height: textareaHeight,
+              paddingBottom: "80px",
+            }}
           >
             {text ? (
               renderTextWithHighlight()
@@ -195,7 +199,7 @@ export default function AddItems({ onItemAdded }) {
               </span>
             )}
           </div>
-          <div className="flex justify-end p-2">
+          <div className="absolute bottom-0 right-0 p-2">
             <button
               type="submit"
               disabled={!isValidCommand}
