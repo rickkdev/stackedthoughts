@@ -63,21 +63,28 @@ export default function AddItems({ onItemAdded }) {
         await handleDopamineSubmit(content, categories);
       }
     } catch (error) {
-      console.error("Error submitting item:", error);
+      console.error("Error submitting item:", error.message);
     }
   };
 
   const handleTaskSubmit = async (content, categories) => {
-    const { error } = await supabase.from("todos").insert([
-      {
-        text: content,
-        categories,
-        is_completed: false,
-        created_at: new Date().toISOString(),
-      },
-    ]);
+    const { data, error } = await supabase
+      .from("todos")
+      .insert([
+        {
+          text: content,
+          categories,
+          is_completed: false,
+          created_at: new Date().toISOString(),
+        },
+      ])
+      .select();
 
-    if (error) throw error;
+    if (error) {
+      console.error("Task submission error:", error.message);
+      throw error;
+    }
+
     setText("");
     onItemAdded();
   };
