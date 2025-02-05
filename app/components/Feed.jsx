@@ -5,9 +5,10 @@ import { CheckSquare, Activity } from "lucide-react";
 import AddItems from "./AddItems";
 import ItemCard from "./ItemCard";
 
-// Helper function to ensure consistent date formatting between server and client
+// Updated helper function to ensure consistent date formatting between server and client
 const formatDate = (dateString) => {
   const date = new Date(dateString);
+  // Use UTC methods to avoid timezone issues
   return new Intl.DateTimeFormat("en-US", {
     year: "numeric",
     month: "2-digit",
@@ -16,6 +17,7 @@ const formatDate = (dateString) => {
     minute: "2-digit",
     second: "2-digit",
     hour12: true,
+    timeZone: "UTC", // Force UTC timezone
   }).format(date);
 };
 
