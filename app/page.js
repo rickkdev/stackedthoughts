@@ -1,58 +1,53 @@
-"use client";
-import { useEffect, useState } from "react";
-import { supabase } from "../lib/supabase";
-import CompletedTodoList from "./components/CompletedTodoList";
-import CategoryDistribution from "./components/CategoryDistribution";
-import DailyOverview from "./components/DailyOverview";
-import CreateTodo from "./components/CreateTodo";
-import DopamineLogging from "./components/DopamineLogging";
+import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
+import { cookies } from "next/headers";
 import Feed from "./components/Feed";
 
-export default function Home() {
-  const [todos, setTodos] = useState([]);
-  const [selectedCategories, setSelectedCategories] = useState([]);
-  const [allCategories, setAllCategories] = useState([]);
+// This component is a Server Component by default (no 'use client' directive)
+export default async function Home() {
+  // Create a Supabase client that works on the server side
+  // Using cookies to maintain authentication state
+  const supabase = createServerComponentClient({ cookies });
 
-  useEffect(() => {
-    fetchTodos();
-  }, []); // Run once on mount
+  // Fetch todos and logs in parallel from Supabase
+  // This happens on the server at request time
+  const { data: todos = [], error: todosError } = await supabase
+    .from("todos")
+    .select("*")
+    .order("created_at", { ascending: false });
 
-  // Extract unique categories from todos
-  useEffect(() => {
-    const categories = new Set();
-    todos.forEach((todo) => {
-      todo.categories.forEach((category) => categories.add(category));
-    });
-    setAllCategories(Array.from(categories));
-  }, [todos]);
+  const { data: logs = [], error: logsError } = await supabase
+    .from("dopamine_logs")
+    .select("*")
+    .order("created_at", { ascending: false });
 
-  async function fetchTodos() {
-    try {
-      const { data, error } = await supabase.from("todos").select("*");
-      if (error) {
-        console.error("Error fetching todos:", error);
-        return;
-      }
-      setTodos(data || []);
-    } catch (e) {
-      console.error("Exception caught:", e);
-    }
+  // Handle any potential errors during data fetching
+  if (todosError || logsError) {
+    console.error("Error fetching data:", { todosError, logsError });
+    return <div>Error loading data</div>;
   }
 
-  const toggleCategory = (category) => {
-    setSelectedCategories((prev) =>
-      prev.includes(category)
-        ? prev.filter((c) => c !== category)
-        : [...prev, category]
-    );
-  };
+  // Process and combine both todos and logs into a single array
+  const initialItems = [...(todos || []), ...(logs || [])]
+    // Remove any items without created_at dates
+    .filter((item) => item && item.created_at)
+    // Standardize the date format for each item
+    .map((item) => ({
+      ...item,
+      created_at: item.created_at
+        ? new Date(item.created_at).toISOString()
+        : null,
+    }))
+    // Sort items by date, newest first
+    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
+  // Pass the processed data to the Feed component
+  // This data will be available immediately on page load
   return (
     <div className="fixed flex justify-center items-center inset-0 bg-customGray">
       <div className="h-full w-full overflow-auto scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-100">
         <div className="container mx-auto px-4">
           <div className="flex flex-row justify-center p-6 space-x-6">
-            <Feed todos={todos} />
+            <Feed initialItems={initialItems} />
           </div>
         </div>
       </div>

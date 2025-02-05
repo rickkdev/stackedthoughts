@@ -1,56 +1,62 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { supabase } from "../../lib/supabase";
 import { CheckSquare, Activity } from "lucide-react";
 import AddItems from "./AddItems";
 import ItemCard from "./ItemCard";
 
-export default function Feed() {
-  const [items, setItems] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+// Helper function to ensure consistent date formatting between server and client
+const formatDate = (dateString) => {
+  const date = new Date(dateString);
+  return new Intl.DateTimeFormat("en-US", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: true,
+  }).format(date);
+};
+
+export default function Feed({ initialItems }) {
+  // Process the server-provided items to include formatted dates
+  // This ensures consistent date display between server and client
+  const processedInitialItems = initialItems.map((item) => ({
+    ...item,
+    created_at: item.created_at,
+    formattedDate: formatDate(item.created_at),
+  }));
+
+  // Initialize state with the processed server data
+  const [items, setItems] = useState(processedInitialItems);
   const [showTasks, setShowTasks] = useState(true);
   const [showDopamine, setShowDopamine] = useState(true);
   const [activeHashtags, setActiveHashtags] = useState(new Set());
 
-  useEffect(() => {
-    fetchItems();
-  }, []);
+  // This function is only called when we need to refresh data
+  // (after adding/updating items)
+  async function refreshItems() {
+    const { data: todos = [] } = await supabase
+      .from("todos")
+      .select("*")
+      .order("created_at", { ascending: false });
 
-  async function fetchItems() {
-    try {
-      setIsLoading(true);
+    const { data: logs = [] } = await supabase
+      .from("dopamine_logs")
+      .select("*")
+      .order("created_at", { ascending: false });
 
-      // Fetch todos
-      const { data: todos, error: todosError } = await supabase
-        .from("todos")
-        .select("*");
+    const combinedItems = [...todos, ...logs]
+      .filter((item) => item && item.created_at)
+      .map((item) => ({
+        ...item,
+        created_at: item.created_at,
+        formattedDate: formatDate(item.created_at),
+      }))
+      .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
-      if (todosError) throw todosError;
-
-      // Log todos to inspect structure
-      console.log("Todos data:", todos);
-
-      // Fetch dopamine logs
-      const { data: logs, error: logsError } = await supabase
-        .from("dopamine_logs")
-        .select("*");
-
-      if (logsError) throw logsError;
-
-      // Log logs to inspect structure
-      console.log("Dopamine logs data:", logs);
-
-      // Combine and sort by created_at
-      const combinedItems = [...todos, ...logs].sort(
-        (a, b) => new Date(b.created_at) - new Date(a.created_at)
-      );
-
-      setItems(combinedItems);
-    } catch (error) {
-      console.error("Error fetching items:", error);
-    } finally {
-      setIsLoading(false);
-    }
+    setItems(combinedItems);
   }
 
   // Extract unique hashtags from all items
@@ -99,7 +105,7 @@ export default function Feed() {
   };
 
   const handleItemAdded = () => {
-    fetchItems();
+    refreshItems();
   };
 
   return (
@@ -132,33 +138,29 @@ export default function Feed() {
 
         <AddItems onItemAdded={handleItemAdded} />
 
-        {isLoading ? (
-          <p>Loading...</p>
-        ) : (
-          <div className="space-y-4">
-            {uniqueHashtags.length > 0 && (
-              <div className="flex flex-wrap gap-2 mb-6">
-                {uniqueHashtags.map((hashtag) => (
-                  <button
-                    key={hashtag}
-                    onClick={() => toggleHashtag(hashtag)}
-                    className={`px-3 py-1.5 rounded-md text-sm transition-colors ${
-                      activeHashtags.has(hashtag)
-                        ? "bg-zinc-800 text-white"
-                        : "bg-zinc-900/50 text-zinc-500 hover:text-zinc-300"
-                    }`}
-                  >
-                    {hashtag}
-                  </button>
-                ))}
-              </div>
-            )}
+        <div className="space-y-4">
+          {uniqueHashtags.length > 0 && (
+            <div className="flex flex-wrap gap-2 mb-6">
+              {uniqueHashtags.map((hashtag) => (
+                <button
+                  key={hashtag}
+                  onClick={() => toggleHashtag(hashtag)}
+                  className={`px-3 py-1.5 rounded-md text-sm transition-colors ${
+                    activeHashtags.has(hashtag)
+                      ? "bg-zinc-800 text-white"
+                      : "bg-zinc-900/50 text-zinc-500 hover:text-zinc-300"
+                  }`}
+                >
+                  {hashtag}
+                </button>
+              ))}
+            </div>
+          )}
 
-            {filteredItems.map((item) => (
-              <ItemCard key={item.id} item={item} onUpdate={fetchItems} />
-            ))}
-          </div>
-        )}
+          {filteredItems.map((item) => (
+            <ItemCard key={item.id} item={item} onUpdate={refreshItems} />
+          ))}
+        </div>
       </div>
     </div>
   );

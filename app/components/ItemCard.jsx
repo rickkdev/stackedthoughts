@@ -63,7 +63,7 @@ export default function ItemCard({ item, onUpdate }) {
             className="text-zinc-400 text-sm cursor-pointer hover:text-zinc-300"
             onClick={() => setIsTimeModalOpen(true)}
           >
-            {new Date(item.created_at).toLocaleString()}
+            {item.formattedDate}
           </span>
         </div>
       </div>
