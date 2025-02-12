@@ -1,0 +1,5 @@
+- there is still a hydration error on some reloads (potentially fixed with last commit)
+- create dashbaords :)
+- api keys are still exposed in client
+- no auth 
+- remove node modules form git
